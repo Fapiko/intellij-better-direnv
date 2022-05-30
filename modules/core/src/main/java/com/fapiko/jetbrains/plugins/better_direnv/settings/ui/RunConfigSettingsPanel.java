@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.panel.ComponentPanelBuilder;
 import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class RunConfigSettingsPanel extends JPanel {
     private final JCheckBox useDirenvCheckbox;
@@ -14,7 +15,6 @@ public class RunConfigSettingsPanel extends JPanel {
     public RunConfigSettingsPanel(RunConfigurationBase configuration) {
         useDirenvCheckbox = new JCheckBox("Enable Direnv");
         trustDirenvCheckbox = new JCheckBox("Trust .envrc");
-        BoxLayout bl1 = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 
         JPanel optionsPanel = new JPanel();
         BoxLayout bl2 = new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS);
@@ -27,9 +27,14 @@ public class RunConfigSettingsPanel extends JPanel {
                 createPanel());
 
 
-        setLayout(bl1);
-        add(new ComponentPanelBuilder(useDirenvCheckbox).createPanel());
-        add(optionsPanel);
+        JPanel boxLayoutWrapper = new JPanel();
+        BoxLayout bl1 = new BoxLayout(boxLayoutWrapper, BoxLayout.PAGE_AXIS);
+        boxLayoutWrapper.setLayout(bl1);
+        boxLayoutWrapper.add(new ComponentPanelBuilder(useDirenvCheckbox).createPanel());
+        boxLayoutWrapper.add(optionsPanel);
+
+        setLayout(new BorderLayout());
+        add(boxLayoutWrapper, BorderLayout.NORTH);
     }
 
     public DirenvSettings getState() {

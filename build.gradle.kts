@@ -27,6 +27,7 @@ allprojects {
 
 
 dependencies {
+    implementation(project(":better_direnv-products-goland"))
     implementation(project(":better_direnv-products-idea"))
 }
 
@@ -34,7 +35,7 @@ dependencies {
 intellij {
     pluginName.set(properties("pluginName"))
     version.set("2021.1.3")
-    type.set("IC")
+    type.set("GO")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins.set("".split(',').map(String::trim).filter(String::isNotEmpty))

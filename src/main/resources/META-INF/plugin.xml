@@ -6,25 +6,6 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <!--        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>-->
-        <projectService
-                serviceImplementation="com.fapiko.jetbrains.plugins.better_direnv.services.BetterDirenvProjectService"/>
-    </extensions>
-
-    <applicationListeners>
-        <listener class="com.fapiko.jetbrains.plugins.better_direnv.listeners.BetterDirenvProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
-    <actions>
-        <action id="com.fapiko.jetbrains.plugins.better_direnv.actions.BetterDirenvImportAction"
-                class="com.fapiko.jetbrains.plugins.better_direnv.actions.BetterDirenvImportAction" text="Import Direnv"
-                description="Imports the .envrc">
-            <add-to-group group-id="RunMenu" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl I"/>
-        </action>
-    </actions>
-
     <depends optional="true" config-file="direnv-idea.xml">com.intellij.java</depends>
-    <!--    <depends optional="true" config-file="direnv-goland.xml">org.jetbrains.plugins.go</depends>-->
+    <depends optional="true" config-file="direnv-goland.xml">org.jetbrains.plugins.go</depends>
 </idea-plugin>

@@ -2,7 +2,6 @@ package com.fapiko.jetbrains.plugins.better_direnv.settings.ui;
 
 import com.fapiko.jetbrains.plugins.better_direnv.commands.DirenvCmd;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -19,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends SettingsEditor<T> {
-    private static final Key<DirenvSettings> USER_DATA_KEY = new Key<>("Direnv Settings");
+    public static final Key<DirenvSettings> USER_DATA_KEY = new Key<>("Direnv Settings");
 
     private static final String FIELD_DIRENV_ENABLED = "DIRENV_ENABLED";
     private static final String FIELD_DIRENV_TRUSTED = "DIRENV_TRUSTED";
@@ -59,9 +58,17 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends Set
             @NotNull RunConfigurationBase runConfigurationBase,
             String workingDirectory,
             Map<String, String> runConfigEnv
-    ) throws ExecutionException {
-        DirenvSettings state = runConfigurationBase.getCopyableUserData(USER_DATA_KEY);
+    ) {
         Map<String, String> envVars = new HashMap<>(runConfigEnv);
+
+        DirenvSettings state = runConfigurationBase.getCopyableUserData(USER_DATA_KEY);
+        envVars.putAll(collectEnv(state, workingDirectory));
+
+        return envVars;
+    }
+
+    public static Map<String, String> collectEnv(DirenvSettings state, String workingDirectory) {
+        Map<String, String> envVars = new HashMap<>();
 
         if (state != null) {
             DirenvCmd cmd = new DirenvCmd(workingDirectory);
@@ -75,6 +82,10 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends Set
     public static DirenvSettings getState(RunConfigurationBase configuration) {
         DirenvSettings state = configuration.getCopyableUserData(USER_DATA_KEY);
         return state;
+    }
+
+    public static String getEditorTitle() {
+        return "Direnv";
     }
 
     @Override
