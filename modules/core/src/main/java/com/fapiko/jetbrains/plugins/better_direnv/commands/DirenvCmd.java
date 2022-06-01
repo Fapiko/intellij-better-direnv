@@ -1,6 +1,5 @@
 package com.fapiko.jetbrains.plugins.better_direnv.commands;
 
-import com.fapiko.jetbrains.plugins.better_direnv.listeners.BetterDirenvProjectManagerListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.execution.ExecutionException;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DirenvCmd {
-    private static final Logger LOG = Logger.getInstance(BetterDirenvProjectManagerListener.class);
+    private static final Logger LOG = Logger.getInstance(DirenvCmd.class);
 
     private String workDir;
 
@@ -58,7 +57,7 @@ public class DirenvCmd {
             }.getType();
 
             returnMap = new Gson().fromJson(output.getOutput(), type);
-            
+
             return returnMap;
         } catch (Exception e) {
             LOG.error(e);

@@ -1,6 +1,5 @@
 package com.fapiko.jetbrains.plugins.better_direnv.runconfigs;
 
-import com.fapiko.jetbrains.plugins.better_direnv.listeners.BetterDirenvProjectManagerListener;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsEditor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class IdeaRunConfigurationExtension extends RunConfigurationExtension {
-    private static final Logger LOG = Logger.getInstance(BetterDirenvProjectManagerListener.class);
+    private static final Logger LOG = Logger.getInstance(IdeaRunConfigurationExtension.class);
 
     @Override
     public <T extends RunConfigurationBase<?>> void updateJavaParameters(@NotNull T configuration, @NotNull JavaParameters params, RunnerSettings runnerSettings) throws ExecutionException {

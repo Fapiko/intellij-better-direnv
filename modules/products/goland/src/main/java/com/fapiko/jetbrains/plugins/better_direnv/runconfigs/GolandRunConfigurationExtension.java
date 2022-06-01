@@ -1,6 +1,5 @@
 package com.fapiko.jetbrains.plugins.better_direnv.runconfigs;
 
-import com.fapiko.jetbrains.plugins.better_direnv.listeners.BetterDirenvProjectManagerListener;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsEditor;
 import com.goide.execution.GoRunConfigurationBase;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class GolandRunConfigurationExtension extends GoRunConfigurationExtension {
-    private static final Logger LOG = Logger.getInstance(BetterDirenvProjectManagerListener.class);
+    private static final Logger LOG = Logger.getInstance(GolandRunConfigurationExtension.class);
 
     @Override
     protected void readExternal(@NotNull GoRunConfigurationBase<?> runConfiguration, @NotNull Element element) {
