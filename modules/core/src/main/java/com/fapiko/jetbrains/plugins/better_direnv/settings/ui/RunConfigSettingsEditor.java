@@ -7,13 +7,10 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.util.JDOMExternalizerUtil;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +67,7 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends Set
     public static Map<String, String> collectEnv(DirenvSettings state, String workingDirectory) {
         Map<String, String> envVars = new HashMap<>();
 
-        if (state != null) {
+        if (state != null && state.isDirenvEnabled()) {
             DirenvCmd cmd = new DirenvCmd(workingDirectory);
 
             envVars.putAll(cmd.importDirenv(state.isDirenvTrusted()));
@@ -104,15 +101,5 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends Set
     @Override
     protected @NotNull JComponent createEditor() {
         return editor;
-    }
-
-    public void importDirenv(String workDir, boolean trustDirenv) {
-        VirtualFile envrcFile = VfsUtil.findFile(Path.of(workDir, ".envrc"), false);
-        if (envrcFile == null || !envrcFile.exists()) {
-            return;
-        }
-
-        DirenvCmd cmd = new DirenvCmd(envrcFile.getParent().getPath());
-        cmd.importDirenv(trustDirenv);
     }
 }

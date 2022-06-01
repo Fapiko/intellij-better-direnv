@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/modules/core" />
             <option value="$PROJECT_DIR$/modules/products/goland" />
             <option value="$PROJECT_DIR$/modules/products/idea" />
+            <option value="$PROJECT_DIR$/modules/products/shellscript" />
           </set>
         </option>
       </GradleProjectSettings>

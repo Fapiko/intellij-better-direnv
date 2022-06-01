@@ -4,17 +4,24 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DirenvCmd {
+    private static final String GROUP_DISPLAY_ID = "Better Direnv";
     private static final Logger LOG = Logger.getInstance(DirenvCmd.class);
 
     private String workDir;
@@ -30,7 +37,6 @@ public class DirenvCmd {
                 LOG.error(output.getOutput());
                 return false;
             } else {
-                LOG.info("direnv allowed on this project");
                 return true;
             }
         } catch (Exception e) {
@@ -42,6 +48,11 @@ public class DirenvCmd {
     public Map<String, String> importDirenv(boolean trustDirenv) {
         Map<String, String> returnMap = new HashMap<>();
 
+        VirtualFile envrcFile = VfsUtil.findFile(Path.of(workDir, ".envrc"), false);
+        if (envrcFile == null || !envrcFile.exists()) {
+            return returnMap;
+        }
+
         try {
             DirenvOutput output = run("export", "json");
             if (output.isError()) {
@@ -49,7 +60,10 @@ public class DirenvCmd {
                     allow();
                     return importDirenv(trustDirenv);
                 } else {
-                    LOG.error("Direnv is blocked and untrusted");
+                    Notifications.Bus.notify(new Notification(GROUP_DISPLAY_ID, "Direnv not allowed",
+                            "Either run `direnv allow` on a terminal or check the `Trust .envrc` box in the" +
+                                    "run configuration settings to use direnv integration", NotificationType.WARNING));
+                    return returnMap;
                 }
             }
 

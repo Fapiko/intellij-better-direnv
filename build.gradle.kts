@@ -29,13 +29,14 @@ allprojects {
 dependencies {
     implementation(project(":better_direnv-products-goland"))
     implementation(project(":better_direnv-products-idea"))
+    implementation(project(":better_direnv-products-shellscript"))
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
     version.set("2021.1.3")
-    type.set("GO")
+    type.set("IU")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins.set("".split(',').map(String::trim).filter(String::isNotEmpty))
@@ -46,6 +47,15 @@ changelog {
     version.set(properties("pluginVersion"))
     groups.set(emptyList())
 }
+
+gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
+    // Don't run the runIde task for subprojects
+    for (task in allTasks) {
+        if (task.name == "runIde" && task.project != task.project.rootProject) {
+            task.enabled = false
+        }
+    }
+})
 
 tasks {
     // Set the JVM compatibility versions

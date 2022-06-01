@@ -8,4 +8,5 @@
 
     <depends optional="true" config-file="direnv-idea.xml">com.intellij.java</depends>
     <depends optional="true" config-file="direnv-goland.xml">org.jetbrains.plugins.go</depends>
+    <depends optional="true" config-file="direnv-shellscript.xml">com.jetbrains.sh</depends>
 </idea-plugin>
