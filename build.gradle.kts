@@ -38,6 +38,8 @@ intellij {
     version.set("2021.1.3")
     type.set("IU")
 
+    updateSinceUntilBuild.set(false)
+
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins.set("".split(',').map(String::trim).filter(String::isNotEmpty))
 }
@@ -106,8 +108,8 @@ tasks {
     }
 
     signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
+        certificateChain.set(File("chain.crt").readText(Charsets.UTF_8))
+        privateKey.set(File("private.pem").readText(Charsets.UTF_8))
         password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
     }
 
