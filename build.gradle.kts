@@ -51,10 +51,17 @@ changelog {
 }
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
-    // Don't run the runIde task for subprojects
+    val ignoreSubprojectTasks = listOf(
+        "buildSearchableOptions", "publishPlugin", "runIde", "runPluginVerifier",
+        "verifyPlugin"
+    )
+
+    // Don't run some tasks for subprojects
     for (task in allTasks) {
-        if (task.name == "runIde" && task.project != task.project.rootProject) {
-            task.enabled = false
+        if (task.project != task.project.rootProject) {
+            when (task.name) {
+                in ignoreSubprojectTasks -> task.enabled = false
+            }
         }
     }
 })

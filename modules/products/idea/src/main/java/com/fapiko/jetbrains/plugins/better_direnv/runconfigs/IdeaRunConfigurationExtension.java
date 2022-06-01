@@ -1,13 +1,12 @@
 package com.fapiko.jetbrains.plugins.better_direnv.runconfigs;
 
+import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsEditor;
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.JavaParameters;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunnerSettings;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.SettingsEditor;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class IdeaRunConfigurationExtension extends RunConfigurationExtension {
-    private static final Logger LOG = Logger.getInstance(IdeaRunConfigurationExtension.class);
 
     @Override
-    public <T extends RunConfigurationBase<?>> void updateJavaParameters(@NotNull T configuration, @NotNull JavaParameters params, RunnerSettings runnerSettings) throws ExecutionException {
+    public <T extends RunConfigurationBase<?>> void updateJavaParameters(@NotNull T configuration, @NotNull JavaParameters params, RunnerSettings runnerSettings) {
         String workDir = params.getWorkingDirectory();
 
         Map<String, String> sourceEnv = new GeneralCommandLine()
@@ -29,7 +27,8 @@ public class IdeaRunConfigurationExtension extends RunConfigurationExtension {
                 )
                 .getEffectiveEnvironment();
 
-        if (RunConfigSettingsEditor.getState(configuration).isDirenvEnabled()) {
+        DirenvSettings state = RunConfigSettingsEditor.getState(configuration);
+        if (state != null && state.isDirenvEnabled()) {
             Map<String, String> envVars = RunConfigSettingsEditor.collectEnv(configuration, workDir, sourceEnv);
 
             params.setEnv(envVars);

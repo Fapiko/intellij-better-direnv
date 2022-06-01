@@ -1,25 +1,23 @@
 # intellij-better-direnv
 
 ![Build](https://github.com/Fapiko/intellij-better-direnv/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-
-## Template ToDo list
-
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [x] Get familiar with the [template documentation][template].
-- [x] Verify the [pluginGroup](/gradle.properties), [plugin ID](/src/main/resources/META-INF/plugin.xml)
-  and [sources package](/src/main/kotlin).
-- [x] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate)
-  for the first time.
-- [ ] Set the Plugin ID in the above README badges.
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified
-  about releases containing new features and fixes.
+[![Version](https://img.shields.io/jetbrains/plugin/v/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
 
 <!-- Plugin description -->
 This plugin adds direnv support to IntelliJ IDEs.
+
+The plugin can be accessed via the Run Configuration settings. To enable it for a given Run Configuration, check the
+`Enable Direnv` checkbox. If you want it to automatically `direnv allow` when updates to the .envrc file are detected,
+check the `Trust .direnv` checkbox. Note that this should only be done for trusted projects.
+
+Currently supported Run Configurations:
+  - Java
+  - Go
+
+
+Unfortunately, each run configuration type needs to be added manually. New run configuration support can be added
+by request.
 
 <!-- Plugin description end -->
 

@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [0.0.4]
+- Add a plugin logo
+
+## [0.0.3]
+- Updated usage documentation in plugin description
+
 ## [0.0.2]
 - Remove upward compatability range constraint
 
