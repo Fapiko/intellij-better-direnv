@@ -1,0 +1,7 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="JavaScript">
+        <nodeRunConfigurationExtension
+                implementation="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.NodeRunConfiguration"
+                id="direnvNodeRunConfig"/>
+    </extensions>
+</idea-plugin>

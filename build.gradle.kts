@@ -9,6 +9,7 @@ plugins {
     id("org.jetbrains.intellij") version "1.6.0"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
+    id("org.sonarqube") version "3.3"
 }
 
 group = properties("pluginGroup")
@@ -29,13 +30,14 @@ allprojects {
 dependencies {
     implementation(project(":better_direnv-products-goland"))
     implementation(project(":better_direnv-products-idea"))
+    implementation(project(":better_direnv-products-nodejs"))
     implementation(project(":better_direnv-products-shellscript"))
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
-    version.set("2021.1.3")
+    version.set(properties("platformVersion"))
     type.set("IU")
 
     updateSinceUntilBuild.set(false)
@@ -50,9 +52,17 @@ changelog {
     groups.set(emptyList())
 }
 
+sonarqube {
+    properties {
+        property("sonar.projectKey", "Fapiko_intellij-better-direnv")
+        property("sonar.organization", "fapiko")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
     val ignoreSubprojectTasks = listOf(
-        "buildSearchableOptions", "publishPlugin", "runIde", "runPluginVerifier",
+        "buildSearchableOptions", "listProductsReleases", "patchPluginXml", "publishPlugin", "runIde", "runPluginVerifier",
         "verifyPlugin"
     )
 
@@ -115,14 +125,14 @@ tasks {
     }
 
     signPlugin {
-        certificateChain.set(File("chain.crt").readText(Charsets.UTF_8))
-        privateKey.set(File("private.pem").readText(Charsets.UTF_8))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+        certificateChain.set(System.getenv("JETBRAINS_SIGNING_CHAIN"))
+        privateKey.set(System.getenv("JETBRAINS_SIGNING_PRIVATE_KEY"))
+        password.set(System.getenv("JETBRAINS_SIGNING_PRIVATE_KEY_PASSWORD"))
     }
 
     publishPlugin {
         dependsOn("patchChangelog")
-        token.set(System.getenv("PUBLISH_TOKEN"))
+        token.set(System.getenv("JETBRAINS_PUBLISH_TOKEN"))
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel

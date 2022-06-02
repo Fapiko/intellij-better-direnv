@@ -51,7 +51,7 @@ public class GolandRunConfigurationExtension extends GoRunConfigurationExtension
     }
 
     @Override
-    protected void patchCommandLine(@NotNull GoRunConfigurationBase<?> configuration, @Nullable RunnerSettings runnerSettings, @NotNull TargetedCommandLineBuilder cmdLine, @NotNull String runnerId, @NotNull GoRunningState<? extends GoRunConfigurationBase<?>> state, GoRunningState.@NotNull CommandLineType commandLineType) throws ExecutionException {
+    protected void patchCommandLine(@NotNull GoRunConfigurationBase<?> configuration, @Nullable RunnerSettings runnerSettings, @NotNull TargetedCommandLineBuilder cmdLine, @NotNull String runnerId, @NotNull GoRunningState<? extends GoRunConfigurationBase<?>> state, @NotNull GoRunningState.CommandLineType commandLineType) throws ExecutionException {
         DirenvSettings direnvSettings = configuration.getCopyableUserData(RunConfigSettingsEditor.USER_DATA_KEY);
         Map<String, String> newEnv = RunConfigSettingsEditor.collectEnv(direnvSettings, configuration.getWorkingDirectory());
 

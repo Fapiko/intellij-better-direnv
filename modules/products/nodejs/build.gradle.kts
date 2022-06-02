@@ -7,10 +7,10 @@ plugins {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     version.set(properties("platformVersion"))
-    type.set("GO")
+    type.set("IU")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins.set(listOf("org.jetbrains.plugins.go"))
+    plugins.set(listOf("JavaScript", "NodeJS"))
 }
 
 dependencies {

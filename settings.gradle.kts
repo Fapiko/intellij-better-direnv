@@ -4,6 +4,7 @@ include(
     "modules/core",
     "modules/products/goland",
     "modules/products/idea",
+    "modules/products/nodejs",
     "modules/products/shellscript"
 )
 

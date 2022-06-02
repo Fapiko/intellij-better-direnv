@@ -3,6 +3,7 @@
 # intellij-better-direnv Changelog
 
 ## [Unreleased]
+- Adds support for NodeJS run configurations
 
 ## [0.0.4]
 - Add a plugin logo
