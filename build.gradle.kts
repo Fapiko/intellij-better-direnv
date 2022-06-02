@@ -9,6 +9,7 @@ plugins {
     id("org.jetbrains.intellij") version "1.6.0"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
+    id("org.sonarqube") version "3.3"
 }
 
 group = properties("pluginGroup")
@@ -48,6 +49,14 @@ intellij {
 changelog {
     version.set(properties("pluginVersion"))
     groups.set(emptyList())
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "Fapiko_intellij-better-direnv")
+        property("sonar.organization", "fapiko")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
