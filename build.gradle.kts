@@ -30,13 +30,14 @@ allprojects {
 dependencies {
     implementation(project(":better_direnv-products-goland"))
     implementation(project(":better_direnv-products-idea"))
+    implementation(project(":better_direnv-products-nodejs"))
     implementation(project(":better_direnv-products-shellscript"))
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
-    version.set("2021.1.3")
+    version.set(properties("platformVersion"))
     type.set("IU")
 
     updateSinceUntilBuild.set(false)
@@ -61,7 +62,7 @@ sonarqube {
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
     val ignoreSubprojectTasks = listOf(
-        "buildSearchableOptions", "listProductReleases", "publishPlugin", "runIde", "runPluginVerifier",
+        "buildSearchableOptions", "listProductsReleases", "patchPluginXml", "publishPlugin", "runIde", "runPluginVerifier",
         "verifyPlugin"
     )
 

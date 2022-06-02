@@ -6,11 +6,9 @@ plugins {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    pluginName.set(properties("pluginName"))
-    version.set("2021.1.3")
-    type.set("IC")
+    version.set(properties("platformVersion"))
 
-    // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
+    // Plugin Dependencies
     plugins.set(listOf("com.intellij.java"))
 }
 

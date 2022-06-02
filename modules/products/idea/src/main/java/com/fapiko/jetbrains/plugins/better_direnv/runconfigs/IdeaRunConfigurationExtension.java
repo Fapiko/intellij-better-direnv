@@ -2,6 +2,7 @@ package com.fapiko.jetbrains.plugins.better_direnv.runconfigs;
 
 import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsEditor;
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.JavaParameters;
@@ -19,6 +20,7 @@ public class IdeaRunConfigurationExtension extends RunConfigurationExtension {
     @Override
     public <T extends RunConfigurationBase<?>> void updateJavaParameters(@NotNull T configuration, @NotNull JavaParameters params, RunnerSettings runnerSettings) {
         String workDir = params.getWorkingDirectory();
+
 
         Map<String, String> sourceEnv = new GeneralCommandLine()
                 .withEnvironment(params.getEnv())
