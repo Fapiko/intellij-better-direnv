@@ -52,7 +52,7 @@ changelog {
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
     val ignoreSubprojectTasks = listOf(
-        "buildSearchableOptions", "publishPlugin", "runIde", "runPluginVerifier",
+        "buildSearchableOptions", "listProductReleases", "publishPlugin", "runIde", "runPluginVerifier",
         "verifyPlugin"
     )
 
