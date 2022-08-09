@@ -14,7 +14,7 @@ check the `Trust .direnv` checkbox. Note that this should only be done for trust
 Currently supported Run Configurations:
   - Java
   - Go
-
+  - NodeJS
 
 Unfortunately, each run configuration type needs to be added manually. New run configuration support can be added
 by request.
