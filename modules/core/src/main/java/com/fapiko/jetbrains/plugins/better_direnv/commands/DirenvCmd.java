@@ -48,11 +48,6 @@ public class DirenvCmd {
     public Map<String, String> importDirenv(boolean trustDirenv) {
         Map<String, String> returnMap = new HashMap<>();
 
-        VirtualFile envrcFile = VfsUtil.findFile(Path.of(workDir, ".envrc"), false);
-        if (envrcFile == null || !envrcFile.exists()) {
-            return returnMap;
-        }
-
         try {
             DirenvOutput output = run("export", "json");
             if (output.isError()) {
@@ -69,6 +64,11 @@ public class DirenvCmd {
 
             Type type = new TypeToken<Map<String, String>>() {
             }.getType();
+
+            // Output will be empty if there is no direnv support
+            if (output.getOutput() == "") {
+                return returnMap;
+            }
 
             returnMap = new Gson().fromJson(output.getOutput(), type);
 
