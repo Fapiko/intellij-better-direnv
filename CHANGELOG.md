@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+## [0.2.0]
+- No longer looks for .envrc in working directory - instead lets direnv find it
+
 ## [0.1.1]
 - Change how dynamic plugin loading of NodeJS works
 
