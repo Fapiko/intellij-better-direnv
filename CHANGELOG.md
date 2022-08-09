@@ -3,6 +3,11 @@
 # intellij-better-direnv Changelog
 
 ## [Unreleased]
+
+## [0.1.1]
+- Change how dynamic plugin loading of NodeJS works
+
+## [0.1.0]
 - Adds support for NodeJS run configurations
 
 ## [0.0.4]
