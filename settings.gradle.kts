@@ -5,7 +5,8 @@ include(
     "modules/products/goland",
     "modules/products/idea",
     "modules/products/nodejs",
-    "modules/products/shellscript"
+    "modules/products/shellscript",
+    "modules/products/pycharm"
 )
 
 rootProject.children.forEach {

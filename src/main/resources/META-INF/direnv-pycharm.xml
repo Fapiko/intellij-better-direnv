@@ -1,0 +1,7 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="Pythonid">
+        <runConfigurationExtension
+                implementation="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.PycharmRunConfigurationExtension"
+                id="direnvPython"/>
+    </extensions>
+</idea-plugin>
