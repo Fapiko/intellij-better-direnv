@@ -10,5 +10,5 @@
     <depends optional="true" config-file="direnv-idea.xml">com.intellij.java</depends>
     <depends optional="true" config-file="direnv-shellscript.xml">com.jetbrains.sh</depends>
     <depends optional="true" config-file="direnv-javascript.xml">JavaScript</depends>
-    <depends optional="true" config-file="direnv-pycharm.xml">com.intellij.modules.python</depends>
+    <depends optional="true" config-file="direnv-python.xml">com.intellij.modules.python</depends>
 </idea-plugin>
