@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.3.0]
+- Adds Python support
+- Fixes NPE when direnv is enabled in a project but no .envrc is found
+
 ## [0.2.0]
 - No longer looks for .envrc in working directory - instead lets direnv find it
 
