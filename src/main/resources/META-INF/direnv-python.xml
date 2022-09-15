@@ -3,5 +3,6 @@
         <runConfigurationExtension
                 implementation="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.PycharmRunConfigurationExtension"
                 id="direnvPython"/>
+        <pythonCommandLineTargetEnvironmentProvider implementation="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.PycharmEnvironmentProvider"/>
     </extensions>
 </idea-plugin>
