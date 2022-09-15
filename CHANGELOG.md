@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [1.0.0]
+- Using an internal & experimental API to resolve an issue https://youtrack.jetbrains.com/issue/PY-56172/RunConfigurationpatchCommandLine-Not-Called-In-2022
+resulting in a non-backwards compatible version of the plugin.
+
+## [0.3.1]
+- Fixes an issue with Python support in 2022.2 version of the IDE
+
 ## [0.3.0]
 - Adds Python support
 - Fixes NPE when direnv is enabled in a project but no .envrc is found
