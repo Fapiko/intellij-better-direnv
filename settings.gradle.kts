@@ -6,7 +6,8 @@ include(
     "modules/products/idea",
     "modules/products/nodejs",
     "modules/products/shellscript",
-    "modules/products/python"
+    "modules/products/python",
+    "modules/products/phpstorm"
 )
 
 rootProject.children.forEach {

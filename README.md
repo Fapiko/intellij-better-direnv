@@ -16,6 +16,7 @@ Currently supported Run Configurations:
   - Go
   - NodeJS
   - Python
+  - PHP
 
 Unfortunately, each run configuration type needs to be added manually. New run configuration support can be added
 by request.
