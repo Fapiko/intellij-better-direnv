@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":better_direnv-products-nodejs"))
     implementation(project(":better_direnv-products-shellscript"))
     implementation(project(":better_direnv-products-python"))
+    implementation(project(":better_direnv-products-phpstorm"))
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
