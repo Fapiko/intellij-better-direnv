@@ -18,6 +18,9 @@ public class PycharmEnvironmentProvider implements PythonCommandLineTargetEnviro
 
     @Override
     public void extendTargetEnvironment(@NotNull Project project, @NotNull HelpersAwareTargetEnvironmentRequest helpersAwareTargetEnvironmentRequest, @NotNull PythonExecution pythonExecution, @NotNull PythonRunParams pythonRunParams) {
+        if (!(pythonRunParams instanceof AbstractPythonRunConfiguration)) {
+            return;
+        }
         AbstractPythonRunConfiguration<?> runConfig = (AbstractPythonRunConfiguration<?>) pythonRunParams;
         DirenvSettings direnvSettings = runConfig.getCopyableUserData(RunConfigSettingsEditor.USER_DATA_KEY);
         Map<String, String> direnvVariables = RunConfigSettingsEditor.collectEnv(direnvSettings, pythonRunParams.getWorkingDirectory());
