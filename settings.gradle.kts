@@ -7,7 +7,8 @@ include(
     "modules/products/nodejs",
     "modules/products/shellscript",
     "modules/products/python",
-    "modules/products/phpstorm"
+    "modules/products/phpstorm",
+    "modules/products/rubymine"
 )
 
 rootProject.children.forEach {

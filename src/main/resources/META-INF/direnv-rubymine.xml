@@ -1,0 +1,7 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="org.jetbrains.plugins.ruby">
+        <runConfigurationExtension
+                implementation="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.RubyMineRunConfigurationExtension"
+                id="direnvRubyMineRunConfig"/>
+    </extensions>
+</idea-plugin>
