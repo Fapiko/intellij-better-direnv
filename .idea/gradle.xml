@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/modules/products/idea" />
             <option value="$PROJECT_DIR$/modules/products/nodejs" />
             <option value="$PROJECT_DIR$/modules/products/python" />
+            <option value="$PROJECT_DIR$/modules/products/rubymine" />
             <option value="$PROJECT_DIR$/modules/products/shellscript" />
           </set>
         </option>
