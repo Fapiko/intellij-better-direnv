@@ -28,6 +28,7 @@ allprojects {
 
 
 dependencies {
+    implementation(project(":better_direnv-products-clion"))
     implementation(project(":better_direnv-products-goland"))
     implementation(project(":better_direnv-products-idea"))
     implementation(project(":better_direnv-products-nodejs"))
@@ -41,7 +42,7 @@ dependencies {
 intellij {
     pluginName.set(properties("pluginName"))
     version.set(properties("platformVersion"))
-    type.set("IU")
+    type.set("CL")
 
     updateSinceUntilBuild.set(false)
 
