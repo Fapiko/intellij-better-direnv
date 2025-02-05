@@ -4,6 +4,17 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
 
+## Notice - This project is not maintained
+
+I've not been keeping up with issues or maintenance on this project for quite some time. JetBrains implements the run
+configuration differently for each language in a way that makes it not straightforward to make this work and keeps
+breaking existing ones. I've also not been doing much software development lately and stepping away from the space for a bit.
+
+If someone would like to take this project over please reach out to me and I'd be happy to transfer ownership of the plugin in
+the marketplace.
+
+## Description
+
 <!-- Plugin description -->
 This plugin adds direnv support to IntelliJ IDEs.
 
