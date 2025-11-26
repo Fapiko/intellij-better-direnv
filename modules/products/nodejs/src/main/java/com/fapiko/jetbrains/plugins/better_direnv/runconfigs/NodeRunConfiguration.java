@@ -5,6 +5,7 @@ import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsE
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.Location;
+import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunnerSettings;
@@ -15,6 +16,7 @@ import com.intellij.javascript.nodejs.execution.runConfiguration.AbstractNodeRun
 import com.intellij.javascript.nodejs.execution.runConfiguration.NodeRunConfigurationLaunchSession;
 import com.intellij.lang.javascript.buildTools.npm.beforeRun.NpmBeforeRunTaskProvider;
 import com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfiguration;
+import com.intellij.lang.javascript.buildTools.npm.rc.NpmRunSettings;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.NlsSafe;
@@ -87,16 +89,21 @@ public class NodeRunConfiguration extends AbstractNodeRunConfigurationExtension 
             Map<String, String> newEnvs = RunConfigSettingsEditor
                 .collectEnv(configuration, wdir, envData);
 
-            @Nullable com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfiguration newConfig = new NpmRunConfiguration(config.getProject(), config.getFactory(), config.getName());
-            Key<KeyFMap> COPYABLE_USER_MAP_KEY = Key.create("COPYABLE_USER_MAP_KEY");
-            // TODO maybe add a before run task provider?
-            NpmBeforeRunTaskProvider.EP_NAME
-                config.putUserData(NpmBeforeRunTaskProvider.EP_NAME, newConfig.getUserData(COPYABLE_USER_MAP_KEY));
-//            config.putUserData(newEnvs);
-//            config.getEnvData().getEnvs().putAll(newEnvs); // TODO immutable
-            NodeRunConfigurationLaunchSession session = new NodeRunConfigurationLaunchSession();
-//            session.addNodeOptionsTo(new NodeTargetRun());
-            return session;
+            NpmRunSettings runSettings = config.getRunSettings();
+            @NotNull EnvironmentVariablesData newEnvData = EnvironmentVariablesData.create(newEnvs, config.getEnvData().isPassParentEnvs());
+            NpmRunSettings newRunSettings = new NpmRunSettings(
+                NpmRunSettings
+                    .builder()
+                    .setArguments(runSettings.getArguments())
+                    .setCommand(runSettings.getCommand())
+                    .setNodeOptions(runSettings.getNodeOptions())
+                    .setEnvData(newEnvData)
+                    .setInterpreterRef(runSettings.getInterpreterRef())
+                    .setPackageJsonPath(runSettings.getPackageJsonSystemDependentPath())
+                    .setPackageManagerPackageRef(runSettings.getPackageManagerPackageRef())
+                    .setScriptNames(runSettings.getScriptNames())
+            );
+            config.setRunSettings(newRunSettings);
         }
         return null;
     }
