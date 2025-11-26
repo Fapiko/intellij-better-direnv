@@ -78,6 +78,13 @@ public class DirenvCmd {
 
             Map<String, String> result = new Gson().fromJson(output.getOutput(), type);
             return Optional.ofNullable(result)
+                .flatMap(m -> {
+                    m.remove("DIRENV_WATCHES");
+                    m.remove("DIRENV_DIR");
+                    m.remove("DIRENV_DIFF");
+                    m.remove("DIRENV_FILE");
+                    return Optional.of(m);
+                })
                 .orElse(Map.of());
         } catch (Exception e) {
             LOG.error(e);
