@@ -1,26 +1,19 @@
 package com.fapiko.jetbrains.plugins.better_direnv.runconfigs;
 
-import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.ui.RunConfigSettingsEditor;
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.Location;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.javascript.nodejs.execution.AbstractNodeTargetRunProfile;
-import com.intellij.javascript.nodejs.execution.NodeTargetRun;
 import com.intellij.javascript.nodejs.execution.runConfiguration.AbstractNodeRunConfigurationExtension;
 import com.intellij.javascript.nodejs.execution.runConfiguration.NodeRunConfigurationLaunchSession;
-import com.intellij.lang.javascript.buildTools.npm.beforeRun.NpmBeforeRunTaskProvider;
 import com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfiguration;
 import com.intellij.lang.javascript.buildTools.npm.rc.NpmRunSettings;
 import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.NlsSafe;
-import com.intellij.util.keyFMap.KeyFMap;
 import com.jetbrains.nodejs.run.NodeJsRunConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -48,16 +41,11 @@ public class NodeRunConfiguration extends AbstractNodeRunConfigurationExtension 
 
     @Override
     public boolean isApplicableFor(@NotNull AbstractNodeTargetRunProfile configuration) {
-        if (configuration instanceof NodeJsRunConfiguration) {
-            return true;
-        } else if (configuration instanceof com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfiguration) {
-            return true;
-        }
-        return false;
+        return (configuration instanceof NodeJsRunConfiguration) || (configuration instanceof NpmRunConfiguration);
     }
 
     @Override
-    protected void patchCommandLine(@NotNull AbstractNodeTargetRunProfile configuration, @Nullable RunnerSettings runnerSettings, @NotNull GeneralCommandLine cmdLine, @NotNull String runnerId, @NotNull Executor executor) throws ExecutionException {
+    protected void patchCommandLine(@NotNull AbstractNodeTargetRunProfile configuration, @Nullable RunnerSettings runnerSettings, @NotNull GeneralCommandLine cmdLine, @NotNull String runnerId, @NotNull Executor executor) {
         configuration.getSelectedOptions();
     }
 
@@ -74,7 +62,7 @@ public class NodeRunConfiguration extends AbstractNodeRunConfigurationExtension 
 
     @Nullable
     @Override
-    public NodeRunConfigurationLaunchSession createLaunchSession(@NotNull AbstractNodeTargetRunProfile configuration, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+    public NodeRunConfigurationLaunchSession createLaunchSession(@NotNull AbstractNodeTargetRunProfile configuration, @NotNull ExecutionEnvironment environment) {
         if (configuration instanceof NodeJsRunConfiguration config) {
 
             Map<String, String> newEnvs = RunConfigSettingsEditor
@@ -83,11 +71,11 @@ public class NodeRunConfiguration extends AbstractNodeRunConfigurationExtension 
             config.setEnvs(newEnvs);
         } else if (configuration instanceof com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfiguration config) {
             @NotNull @NlsSafe File packagePath = new File(config.getRunSettings().getPackageJsonSystemDependentPath());
-            @NotNull String wdir = packagePath.getParent();
+            @NotNull String workingDirectory = packagePath.getParent();
 
             @NotNull Map<String, String> envData = config.getEnvData().getEnvs();
             Map<String, String> newEnvs = RunConfigSettingsEditor
-                .collectEnv(configuration, wdir, envData);
+                .collectEnv(configuration, workingDirectory, envData);
 
             NpmRunSettings runSettings = config.getRunSettings();
             @NotNull EnvironmentVariablesData newEnvData = EnvironmentVariablesData.create(newEnvs, config.getEnvData().isPassParentEnvs());
