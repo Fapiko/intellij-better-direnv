@@ -50,6 +50,8 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellijPlatform {
+    buildSearchableOptions = false
+
     pluginConfiguration {
         name = properties("pluginName")
 
@@ -59,9 +61,6 @@ intellijPlatform {
             untilBuild = properties("pluginUntilBuild")
         }
     }
-
-    // Note: Plugin dependencies are now configured in the dependencies block using bundledPlugins() or plugins()
-    // The platformPlugins property is not currently defined in gradle.properties
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
@@ -80,7 +79,7 @@ sonarqube {
 
 gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
     val ignoreSubprojectTasks = listOf(
-        "buildSearchableOptions", "listProductsReleases", "patchPluginXml", "publishPlugin", "runIde", "runPluginVerifier",
+        "buildSearchableOptions", "prepareJarSearchableOptions", "listProductsReleases", "patchPluginXml", "publishPlugin", "runIde", "runPluginVerifier",
         "verifyPlugin"
     )
 
