@@ -100,6 +100,6 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends Set
 
     @Override
     protected @NotNull JComponent createEditor() {
-        return editor;
+        return editor.getComponent();
     }
 }
