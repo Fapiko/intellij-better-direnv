@@ -4,7 +4,6 @@ import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import javax.swing.JComponent
 
 class RunConfigSettingsPanel(configuration: RunConfigurationBase<*>) {
