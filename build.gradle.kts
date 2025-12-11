@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.10.4"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "2.4.0"
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "5.1.0.4882"
 }
 
 group = properties("pluginGroup")
