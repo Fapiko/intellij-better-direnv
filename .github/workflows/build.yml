@@ -96,11 +96,12 @@ jobs:
           name: tests-result
           path: ${{ github.workspace }}/build/reports/tests
 
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube --info
+#      # Can be re-enabled once the project owner has updated the sonarqube settings
+#      - name: Build and analyze
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew build sonarqube --info
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
