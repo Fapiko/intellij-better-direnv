@@ -1,4 +1,6 @@
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -59,6 +61,27 @@ intellijPlatform {
         ideaVersion {
             sinceBuild = properties("pluginSinceBuild")
             untilBuild = properties("pluginUntilBuild")
+        }
+    }
+
+    pluginVerification {
+        ides {
+
+            select {
+                types = listOf(
+                    IntelliJPlatformType.IntellijIdeaCommunity,
+                    IntelliJPlatformType.IntellijIdeaUltimate,
+                    IntelliJPlatformType.PyCharmCommunity,
+                    IntelliJPlatformType.PhpStorm,
+                    IntelliJPlatformType.RubyMine,
+                    IntelliJPlatformType.GoLand,
+                    IntelliJPlatformType.WebStorm
+                )
+
+                channels = listOf(ProductRelease.Channel.RELEASE)
+                sinceBuild = properties("pluginSinceBuild")
+                untilBuild = properties("pluginUntilBuild")
+            }
         }
     }
 }
