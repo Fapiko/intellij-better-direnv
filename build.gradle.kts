@@ -67,15 +67,16 @@ intellijPlatform {
     pluginVerification {
         ides {
 
+            // Some products are disabled, a full test exceeds the disk space of the github runner
             select {
                 types = listOf(
                     IntelliJPlatformType.IntellijIdeaCommunity,
                     IntelliJPlatformType.IntellijIdeaUltimate,
-                    IntelliJPlatformType.PyCharmCommunity,
-                    IntelliJPlatformType.PhpStorm,
-                    IntelliJPlatformType.RubyMine,
-                    IntelliJPlatformType.GoLand,
-                    IntelliJPlatformType.WebStorm
+//                    IntelliJPlatformType.PyCharmCommunity,
+//                    IntelliJPlatformType.PhpStorm,
+//                    IntelliJPlatformType.RubyMine,
+//                    IntelliJPlatformType.GoLand,
+//                    IntelliJPlatformType.WebStorm
                 )
 
                 channels = listOf(ProductRelease.Channel.RELEASE)
