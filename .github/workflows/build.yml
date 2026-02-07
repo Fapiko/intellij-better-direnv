@@ -103,6 +103,7 @@ jobs:
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #        run: ./gradlew build sonarqube --info
 
+      # The plugin verification exhausts the available disk space, drop it for the time being
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
         uses: actions/cache@v4

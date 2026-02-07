@@ -70,7 +70,7 @@ intellijPlatform {
             // Some products are disabled, a full test exceeds the disk space of the github runner
             select {
                 types = listOf(
-                    IntelliJPlatformType.IntellijIdeaCommunity,
+//                    IntelliJPlatformType.IntellijIdeaCommunity,
                     IntelliJPlatformType.IntellijIdeaUltimate,
 //                    IntelliJPlatformType.PyCharmCommunity,
 //                    IntelliJPlatformType.PhpStorm,
