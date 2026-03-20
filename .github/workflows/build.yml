@@ -100,7 +100,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build # sonarqube --info # Can be re-enabled once the project owner has updated the sonarqube settings
+        run: ./gradlew buildPlugin # sonarqube --info # Can be re-enabled once the project owner has updated the sonarqube settings
 
       # The plugin verification exhausts the available disk space, drop it for the time being
 #      # Cache Plugin Verifier IDEs
