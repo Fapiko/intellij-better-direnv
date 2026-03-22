@@ -33,7 +33,6 @@ steps:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
       - ./gradlew properties --console=plain -q
-      - ./gradlew listProductsReleases
 
   - name: run-tests
     image: eclipse-temurin:21-jdk
@@ -78,7 +77,7 @@ steps:
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
-      - ./gradlew runPluginVerifier -Pplugin.verifier.home.dir=~/.pluginVerifier
+      - ./gradlew runPluginVerifier
 
   - name: prepare-artifact
     image: eclipse-temurin:21-jdk
