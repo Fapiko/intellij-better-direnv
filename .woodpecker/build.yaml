@@ -43,7 +43,7 @@ steps:
       - ./gradlew test
 
   - name: verify-plugin
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:17-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
@@ -65,7 +65,7 @@ steps:
       - ./gradlew build --info
 
   - name: sonarqube
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:17-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
       SONAR_TOKEN:
@@ -74,14 +74,14 @@ steps:
       - '[ -z "$SONAR_TOKEN" ] || [ "$SONAR_TOKEN" = "." ] && echo "Skipping: SONAR_TOKEN not configured" && exit 0; ./gradlew sonarqube --info'
 
   - name: run-plugin-verifier
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:17-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
       - ./gradlew runPluginVerifier -Pplugin.verifier.home.dir=~/.pluginVerifier
 
   - name: prepare-artifact
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:17-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
@@ -92,7 +92,7 @@ steps:
         echo "Artifact ${FILENAME%.zip} ready"
 
   - name: create-release-draft
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:17-jdk
     when:
       - event: push
         branch: main
