@@ -12,7 +12,7 @@ when:
 
 steps:
   - name: gradle-wrapper-validation
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:21-jdk
     commands:
       - |
         WRAPPER_JAR=gradle/wrapper/gradle-wrapper.jar
@@ -28,7 +28,7 @@ steps:
         fi
 
   - name: export-properties
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:21-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
@@ -36,7 +36,7 @@ steps:
       - ./gradlew listProductsReleases
 
   - name: run-tests
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:21-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
@@ -58,7 +58,7 @@ steps:
       - '[ -z "$QODANA_TOKEN" ] || [ "$QODANA_TOKEN" = "." ] && echo "Skipping: QODANA_TOKEN not configured" && exit 0; qodana scan --save-report'
 
   - name: build
-    image: eclipse-temurin:11-jdk
+    image: eclipse-temurin:21-jdk
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
