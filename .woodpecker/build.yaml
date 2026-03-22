@@ -51,20 +51,29 @@ steps:
 
   - name: qodana
     image: jetbrains/qodana-jvm
+    skip_on_missing_secret: true
     environment:
       QODANA_TOKEN:
         from_secret: qodana_token
     commands:
       - qodana scan --save-report
 
-  - name: build-and-analyze
+  - name: build
     image: eclipse-temurin:11-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew build --info
+
+  - name: sonarqube
+    image: eclipse-temurin:11-jdk
+    skip_on_missing_secret: true
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
       SONAR_TOKEN:
         from_secret: sonar_token
     commands:
-      - ./gradlew build sonarqube --info
+      - ./gradlew sonarqube --info
 
   - name: run-plugin-verifier
     image: eclipse-temurin:11-jdk
@@ -86,6 +95,7 @@ steps:
 
   - name: create-release-draft
     image: eclipse-temurin:11-jdk
+    skip_on_missing_secret: true
     when:
       - event: push
         branch: main
