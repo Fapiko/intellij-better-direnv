@@ -4,3 +4,4 @@
 build
 chain.crt
 private.pem
+.sdkmanrc
