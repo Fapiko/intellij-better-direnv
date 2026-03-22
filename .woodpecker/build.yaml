@@ -52,9 +52,8 @@ steps:
   - name: qodana
     image: jetbrains/qodana-jvm
     skip_on_missing_secret: true
-    environment:
-      QODANA_TOKEN:
-        from_secret: qodana_token
+    secrets:
+      - qodana_token
     commands:
       - qodana scan --save-report
 
@@ -68,10 +67,10 @@ steps:
   - name: sonarqube
     image: eclipse-temurin:11-jdk
     skip_on_missing_secret: true
+    secrets:
+      - sonar_token
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-      SONAR_TOKEN:
-        from_secret: sonar_token
     commands:
       - ./gradlew sonarqube --info
 
@@ -99,10 +98,10 @@ steps:
     when:
       - event: push
         branch: main
+    secrets:
+      - github_token
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-      GITHUB_TOKEN:
-        from_secret: github_token
     commands:
       - apt-get update -qq && apt-get install -y -qq gh
       - |
