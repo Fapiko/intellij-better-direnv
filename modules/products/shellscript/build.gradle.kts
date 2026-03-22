@@ -1,12 +1,19 @@
-fun properties(key: String) = project.findProperty(key).toString()
-
 plugins {
-    id("org.jetbrains.intellij")
+    id("org.jetbrains.intellij.platform.module")
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-intellij {
-    version.set(properties("platformVersion"))
+repositories {
+    mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
 
-    plugins.set(listOf("com.jetbrains.sh"))
+dependencies {
+    implementation(project(":better_direnv-core"))
+
+    intellijPlatform {
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        bundledPlugin("com.jetbrains.sh")
+    }
 }

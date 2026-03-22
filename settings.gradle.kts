@@ -1,3 +1,17 @@
+pluginManagement {
+    val intellijPlatformPluginVersion: String by settings
+
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    plugins {
+        id("org.jetbrains.intellij.platform") version intellijPlatformPluginVersion
+        id("org.jetbrains.intellij.platform.module") version intellijPlatformPluginVersion
+    }
+}
+
 rootProject.name = "better_direnv"
 
 include(

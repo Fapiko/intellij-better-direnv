@@ -1,16 +1,22 @@
-fun properties(key: String) = project.findProperty(key).toString()
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    id("org.jetbrains.intellij")
-    // Gradle Lombok plugin
-    id("io.freefair.lombok") version "6.4.3"
+    id("org.jetbrains.intellij.platform.module")
+    id("io.freefair.lombok") version "8.10.2"
+}
+
+repositories {
+    mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-}
 
-// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-intellij {
-    version.set(properties("platformVersion"))
+    intellijPlatform {
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        testFramework(TestFrameworkType.Platform)
+    }
 }
