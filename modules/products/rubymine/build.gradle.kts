@@ -1,7 +1,5 @@
-fun properties(key: String) = project.findProperty(key).toString()
-
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.11.0"
+    id("org.jetbrains.intellij.platform.module")
 }
 
 repositories {
@@ -13,8 +11,9 @@ repositories {
 
 dependencies {
     implementation(project(":better_direnv-core"))
+
     intellijPlatform {
-        create("IU", properties("platformVersion"))
-        plugins(listOf("org.jetbrains.plugins.ruby:223.7571.4"))
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        plugin("org.jetbrains.plugins.ruby:${providers.gradleProperty("rubyPluginVersion").get()}")
     }
 }

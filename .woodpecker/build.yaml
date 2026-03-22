@@ -1,0 +1,117 @@
+# Woodpecker CI Pipeline for intellij-better-direnv
+# Steps:
+# - validate Gradle Wrapper
+# - run 'test' and 'verifyPlugin' tasks
+# - run Qodana inspections
+# - run 'buildPlugin' task and prepare artifact
+# - run 'runPluginVerifier' task
+# - create a draft release
+
+when:
+  - event: [push, pull_request]
+
+steps:
+  - name: gradle-wrapper-validation
+    image: eclipse-temurin:21-jdk
+    commands:
+      - |
+        WRAPPER_JAR=gradle/wrapper/gradle-wrapper.jar
+        EXPECTED_SHA=$(grep distributionSha256Sum gradle/wrapper/gradle-wrapper.properties | cut -d= -f2)
+        if [ -n "$EXPECTED_SHA" ]; then
+          ACTUAL_SHA=$(sha256sum "$WRAPPER_JAR" | cut -d' ' -f1)
+          if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+            echo "Gradle wrapper checksum mismatch!" && exit 1
+          fi
+          echo "Gradle wrapper checksum OK"
+        else
+          echo "No distributionSha256Sum found, skipping checksum verification"
+        fi
+
+  - name: export-properties
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew properties --console=plain -q
+
+  - name: run-tests
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew test
+
+  - name: verify-plugin
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew verifyPlugin
+
+  - name: qodana
+    image: jetbrains/qodana-jvm
+    environment:
+      QODANA_TOKEN:
+        from_secret: qodana_token
+    commands:
+      - '[ -z "$QODANA_TOKEN" ] || [ "$QODANA_TOKEN" = "." ] && echo "Skipping: QODANA_TOKEN not configured" && exit 0; qodana scan --save-report'
+
+  - name: build
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew build --info
+
+  - name: sonarqube
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+      SONAR_TOKEN:
+        from_secret: sonar_token
+    commands:
+      - '[ -z "$SONAR_TOKEN" ] || [ "$SONAR_TOKEN" = "." ] && echo "Skipping: SONAR_TOKEN not configured" && exit 0; ./gradlew sonarqube --info'
+
+  - name: run-plugin-verifier
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - ./gradlew runPluginVerifier
+
+  - name: prepare-artifact
+    image: eclipse-temurin:21-jdk
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+    commands:
+      - |
+        cd build/distributions
+        FILENAME=$(ls *.zip | head -1)
+        unzip "$FILENAME" -d content
+        echo "Artifact ${FILENAME%.zip} ready"
+
+  - name: create-release-draft
+    image: eclipse-temurin:21-jdk
+    when:
+      - event: push
+        branch: main
+    environment:
+      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
+      GITHUB_TOKEN:
+        from_secret: github_token
+    commands:
+      - '[ -z "$GITHUB_TOKEN" ] || [ "$GITHUB_TOKEN" = "." ] && echo "Skipping: GITHUB_TOKEN not configured" && exit 0'
+      - apt-get update -qq && apt-get install -y -qq gh
+      - |
+        PROPERTIES="$(./gradlew properties --console=plain -q)"
+        VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
+        CHANGELOG="$(./gradlew getChangelog --unreleased --no-header --console=plain -q)"
+
+        gh api repos/{owner}/{repo}/releases \
+          --jq '.[] | select(.draft == true) | .id' \
+          | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
+
+        gh release create "v${VERSION}" \
+          --draft \
+          --title "v${VERSION}" \
+          --notes "${CHANGELOG}"

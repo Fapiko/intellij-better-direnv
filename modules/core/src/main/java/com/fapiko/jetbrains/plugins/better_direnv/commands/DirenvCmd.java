@@ -8,19 +8,21 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class DirenvCmd {
     private static final String GROUP_DISPLAY_ID = "Better Direnv";
     private static final Logger LOG = Logger.getInstance(DirenvCmd.class);
-    private static final String MINIMAL_DIRENV_VERSION = "2.8.0"; // introduced JSON export in this version
 
     private String workDir;
 
@@ -44,57 +46,37 @@ public class DirenvCmd {
     }
 
     public Map<String, String> importDirenv(boolean trustDirenv) {
+        Map<String, String> returnMap = new HashMap<>();
+
         try {
-            if (!versionSupported()) {
-                Notifications.Bus.notify(new Notification(GROUP_DISPLAY_ID, "Direnv version not supported",
-                        "Better Direnv requires direnv version " + MINIMAL_DIRENV_VERSION + " or higher",
-                        NotificationType.WARNING));
-                return Map.of();
-            }
             DirenvOutput output = run("export", "json");
             if (output.isError()) {
                 if (output.getOutput().contains("is blocked") && trustDirenv) {
-                    if (allow()) {
-                        return importDirenv(trustDirenv);
-                    } else {
-                        Notifications.Bus.notify(new Notification(GROUP_DISPLAY_ID, "Direnv allow failed",
-                                "Failed to run `direnv allow` command", NotificationType.WARNING));
-                        return Map.of();
-                    }
+                    allow();
+                    return importDirenv(trustDirenv);
                 } else {
                     Notifications.Bus.notify(new Notification(GROUP_DISPLAY_ID, "Direnv not allowed",
                             "Either run `direnv allow` on a terminal or check the `Trust .envrc` box in the" +
                                     "run configuration settings to use direnv integration", NotificationType.WARNING));
-                    return Map.of();
+                    return returnMap;
                 }
             }
 
+            Type type = new TypeToken<Map<String, String>>() {
+            }.getType();
+
             // Output will be empty if there is no direnv support
-            if (output.getOutput().isEmpty()) {
-                return Map.of();
+            if (output.getOutput() == "") {
+                return returnMap;
             }
 
-            Type type = new TypeToken<Map<String, String>>() {}.getType();
+            returnMap = new Gson().fromJson(output.getOutput(), type);
 
-            Map<String, String> result = new Gson().fromJson(output.getOutput(), type);
-            return Optional.ofNullable(result)
-                .flatMap(m -> {
-                    m.remove("DIRENV_WATCHES");
-                    m.remove("DIRENV_DIR");
-                    m.remove("DIRENV_DIFF");
-                    m.remove("DIRENV_FILE");
-                    return Optional.of(m);
-                })
-                .orElse(Map.of());
+            return returnMap;
         } catch (Exception e) {
             LOG.error(e);
-            return Map.of();
+            return returnMap;
         }
-    }
-
-    private boolean versionSupported() throws IOException, ExecutionException, InterruptedException {
-        DirenvOutput output = run("version", MINIMAL_DIRENV_VERSION);
-        return !output.isError();
     }
 
     private DirenvOutput run(String... args) throws ExecutionException, InterruptedException, IOException {

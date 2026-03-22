@@ -3,6 +3,7 @@ package com.fapiko.jetbrains.plugins.better_direnv.settings.ui;
 import com.fapiko.jetbrains.plugins.better_direnv.commands.DirenvCmd;
 import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings;
 import com.intellij.execution.configurations.RunConfigurationBase;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.util.JDOMExternalizerUtil;
 import com.intellij.openapi.util.Key;
@@ -13,19 +14,19 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends SettingsEditor<T> {
+public class RunConfigSettingsEditor<T extends RunConfigurationBase> extends SettingsEditor<T> {
     public static final Key<DirenvSettings> USER_DATA_KEY = new Key<>("Direnv Settings");
 
     private static final String FIELD_DIRENV_ENABLED = "DIRENV_ENABLED";
     private static final String FIELD_DIRENV_TRUSTED = "DIRENV_TRUSTED";
 
-    private final RunConfigSettingsPanel editor;
+    private RunConfigSettingsPanel editor;
 
-    public RunConfigSettingsEditor(RunConfigurationBase<?> configuration) {
+    public RunConfigSettingsEditor(RunConfigurationBase configuration) {
         editor = new RunConfigSettingsPanel(configuration);
     }
 
-    public static void readExternal(@NotNull RunConfigurationBase<?> configuration, @NotNull Element element) {
+    public static void readExternal(@NotNull RunConfigurationBase configuration, @NotNull Element element) {
         boolean isDirenvEnabled = readBool(element, FIELD_DIRENV_ENABLED);
         boolean isDirenvTrusted = readBool(element, FIELD_DIRENV_TRUSTED);
 
@@ -33,7 +34,7 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends 
         configuration.putCopyableUserData(USER_DATA_KEY, state);
     }
 
-    public static void writeExternal(@NotNull RunConfigurationBase<?> configuration, @NotNull Element element) {
+    public static void writeExternal(@NotNull RunConfigurationBase configuration, @NotNull Element element) {
         DirenvSettings state = configuration.getCopyableUserData(USER_DATA_KEY);
         if (state != null) {
             writeBool(element, FIELD_DIRENV_ENABLED, state.isDirenvEnabled());
@@ -51,7 +52,7 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends 
     }
 
     public static Map<String, String> collectEnv(
-            @NotNull RunConfigurationBase<?> runConfigurationBase,
+            @NotNull RunConfigurationBase runConfigurationBase,
             String workingDirectory,
             Map<String, String> runConfigEnv
     ) {
@@ -75,8 +76,9 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends 
         return envVars;
     }
 
-    public static DirenvSettings getState(RunConfigurationBase<?> configuration) {
-        return configuration.getCopyableUserData(USER_DATA_KEY);
+    public static DirenvSettings getState(RunConfigurationBase configuration) {
+        DirenvSettings state = configuration.getCopyableUserData(USER_DATA_KEY);
+        return state;
     }
 
     public static String getEditorTitle() {
@@ -92,12 +94,12 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends 
     }
 
     @Override
-    protected void applyEditorTo(@NotNull T configuration) {
+    protected void applyEditorTo(@NotNull T configuration) throws ConfigurationException {
         configuration.putCopyableUserData(USER_DATA_KEY, editor.getState());
     }
 
     @Override
     protected @NotNull JComponent createEditor() {
-        return editor.getComponent();
+        return editor;
     }
 }

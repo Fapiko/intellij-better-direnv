@@ -1,10 +1,8 @@
-fun properties(key: String) = project.findProperty(key).toString()
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
-    id("org.jetbrains.intellij.platform") version "2.11.0"
-    // Gradle Lombok plugin - updated to 8.11 for Java 21 compatibility
-    id("io.freefair.lombok") version "8.11"
+    id("org.jetbrains.intellij.platform.module")
+    id("io.freefair.lombok") version "8.10.2"
 }
 
 repositories {
@@ -15,9 +13,14 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
     intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        testFramework(TestFrameworkType.Platform)
     }
+}
+
+tasks.test {
+    failOnNoDiscoveredTests = false
 }

@@ -1,23 +1,27 @@
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
-import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
-fun properties(key: String) = project.findProperty(key).toString()
+fun properties(key: String) = providers.gradleProperty(key)
 
 plugins {
-    // Java support
     id("java")
-    // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.11.0"
-    // Gradle Changelog Plugin
-    id("org.jetbrains.changelog") version "2.4.0"
-    id("org.sonarqube") version "5.1.0.4882"
+    id("org.jetbrains.intellij.platform")
+    id("org.jetbrains.changelog") version "2.2.1"
+    id("org.sonarqube") version "3.3"
 }
 
-group = properties("pluginGroup")
-version = properties("pluginVersion")
+group = properties("pluginGroup").get()
+version = properties("pluginVersion").get()
 
-// Root project repositories
+allprojects {
+    apply(plugin = "java")
+
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = properties("javaVersion").get()
+        targetCompatibility = properties("javaVersion").get()
+    }
+}
+
 repositories {
     mavenCentral()
     intellijPlatform {
@@ -25,71 +29,73 @@ repositories {
     }
 }
 
-allprojects {
-    version = version
-    group = group
-
-    apply(plugin = "java")
-
-    repositories {
-        mavenCentral()
-    }
-}
-
-
 dependencies {
-    implementation(project(":better_direnv-products-goland"))
-    implementation(project(":better_direnv-products-idea"))
-    implementation(project(":better_direnv-products-nodejs"))
-    implementation(project(":better_direnv-products-shellscript"))
-    implementation(project(":better_direnv-products-python"))
-    implementation(project(":better_direnv-products-phpstorm"))
-    implementation(project(":better_direnv-products-rubymine"))
     intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
+        intellijIdeaUltimate(properties("platformVersion"))
+        testFramework(TestFrameworkType.Platform)
+        pluginComposedModule(project(":better_direnv-core"))
+        pluginComposedModule(project(":better_direnv-products-goland"))
+        pluginComposedModule(project(":better_direnv-products-idea"))
+        pluginComposedModule(project(":better_direnv-products-nodejs"))
+        pluginComposedModule(project(":better_direnv-products-shellscript"))
+        pluginComposedModule(project(":better_direnv-products-python"))
+        pluginComposedModule(project(":better_direnv-products-phpstorm"))
+        pluginComposedModule(project(":better_direnv-products-rubymine"))
     }
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellijPlatform {
-    buildSearchableOptions = false
-
     pluginConfiguration {
         name = properties("pluginName")
+        version = properties("pluginVersion")
 
-        // Configure sinceBuild and untilBuild - explicitly set to maintain compatibility range
+        description = provider {
+            projectDir.resolve("README.md").readText().lines().run {
+                val start = "<!-- Plugin description -->"
+                val end = "<!-- Plugin description end -->"
+
+                if (!containsAll(listOf(start, end))) {
+                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
+                }
+                subList(indexOf(start) + 1, indexOf(end))
+            }.joinToString("\n").run { markdownToHTML(this) }
+        }
+
+        changeNotes = provider {
+            changelog.renderItem(
+                changelog.getOrNull(properties("pluginVersion").get()) ?: changelog.getLatest(),
+                org.jetbrains.changelog.Changelog.OutputType.HTML
+            )
+        }
+
         ideaVersion {
             sinceBuild = properties("pluginSinceBuild")
-            untilBuild = properties("pluginUntilBuild")
+            untilBuild = provider { properties("pluginUntilBuild").orNull?.takeIf { it.isNotEmpty() } }
+        }
+    }
+
+    signing {
+        certificateChain = provider { File("chain.crt").readText(Charsets.UTF_8) }
+        privateKey = provider { File("private.pem").readText(Charsets.UTF_8) }
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+        channels = provider {
+            listOf(properties("pluginVersion").get().split('-').getOrElse(1) { "default" }.split('.').first())
         }
     }
 
     pluginVerification {
         ides {
-
-            // Some products are disabled, a full test exceeds the disk space of the github runner
-            select {
-                types = listOf(
-//                    IntelliJPlatformType.IntellijIdeaCommunity,
-                    IntelliJPlatformType.IntellijIdeaUltimate,
-//                    IntelliJPlatformType.PyCharmCommunity,
-//                    IntelliJPlatformType.PhpStorm,
-//                    IntelliJPlatformType.RubyMine,
-//                    IntelliJPlatformType.GoLand,
-//                    IntelliJPlatformType.WebStorm
-                )
-
-                channels = listOf(ProductRelease.Channel.RELEASE)
-                sinceBuild = properties("pluginSinceBuild")
-                untilBuild = properties("pluginUntilBuild")
-            }
+            recommended()
         }
     }
 }
 
-// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
-    version.set(properties("pluginVersion"))
+    version = properties("pluginVersion").get()
     groups.set(emptyList())
 }
 
@@ -101,96 +107,8 @@ sonarqube {
     }
 }
 
-gradle.taskGraph.whenReady(closureOf<TaskExecutionGraph> {
-    val ignoreSubprojectTasks = listOf(
-        "buildSearchableOptions", "prepareJarSearchableOptions", "listProductsReleases", "patchPluginXml", "publishPlugin", "runIde", "runPluginVerifier",
-        "verifyPlugin"
-    )
-
-    // Don't run some tasks for subprojects
-    for (task in allTasks) {
-        if (task.project != task.project.rootProject) {
-            when (task.name) {
-                in ignoreSubprojectTasks -> task.enabled = false
-            }
-        }
-    }
-})
-
 tasks {
-    // Set the JVM compatibility versions
-    properties("javaVersion").let {
-        withType<JavaCompile> {
-            sourceCompatibility = it
-            targetCompatibility = it
-        }
-    }
-
     wrapper {
-        gradleVersion = properties("gradleVersion")
-    }
-
-    patchPluginXml {
-        version = properties("pluginVersion")
-        // Note: sinceBuild and untilBuild are now configured in pluginConfiguration.ideaVersion block
-
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription.set(
-            projectDir.resolve("README.md").readText().lines().run {
-                val start = "<!-- Plugin description -->"
-                val end = "<!-- Plugin description end -->"
-
-                if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end))
-            }.joinToString("\n").run { markdownToHTML(this) }
-        )
-
-        // Get the latest available change notes from the changelog file
-        changeNotes.set(
-            changelog.renderItem(
-                changelog.getOrNull(properties("pluginVersion")) ?: changelog.getLatest(),
-                org.jetbrains.changelog.Changelog.OutputType.HTML
-            )
-        )
-    }
-
-    // Configure UI tests plugin
-    // Read more: https://github.com/JetBrains/intellij-ui-test-robot
-    val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
-        task {
-            jvmArgumentProviders += CommandLineArgumentProvider {
-                listOf(
-                    "-Drobot-server.port=8082",
-                    "-Dide.mac.message.dialogs.as.sheets=false",
-                    "-Djb.privacy.policy.text=<!--999.999-->",
-                    "-Djb.consents.confirmation.enabled=false",
-                )
-            }
-        }
-
-        plugins {
-            robotServerPlugin()
-        }
-    }
-
-    signPlugin {
-        val chainFile = File("chain.crt")
-        val keyFile = File("private.pem")
-        if (chainFile.exists() && keyFile.exists()) {
-            certificateChain.set(chainFile.readText(Charsets.UTF_8))
-            privateKey.set(keyFile.readText(Charsets.UTF_8))
-            password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-        }
-    }
-
-    publishPlugin {
-        dependsOn("patchChangelog")
-        token = System.getenv("PUBLISH_TOKEN")
-        // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-        // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
+        gradleVersion = properties("gradleVersion").get()
     }
 }

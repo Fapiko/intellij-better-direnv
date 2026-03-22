@@ -1,7 +1,5 @@
-fun properties(key: String) = project.findProperty(key).toString()
-
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.11.0"
+    id("org.jetbrains.intellij.platform.module")
 }
 
 repositories {
@@ -12,8 +10,10 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":better_direnv-core"))
+
     intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
-        bundledPlugins(listOf("com.jetbrains.sh"))
+        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
+        bundledPlugin("com.jetbrains.sh")
     }
 }

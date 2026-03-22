@@ -36,29 +36,29 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@v2.4.0
 
       # Validate wrapper
       - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/wrapper-validation-action@v1.0.4
 
       # Setup Java 11 environment for the next steps
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v2
         with:
           distribution: zulu
           java-version: 21
           cache: gradle
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+        uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Gradle packages
-        uses: actions/cache@v4
+        uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -77,12 +77,12 @@ jobs:
           CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
           CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
 
-          echo "version=$VERSION" >>$GITHUB_OUTPUT
-          echo "name=$NAME" >>$GITHUB_OUTPUT
-          echo "changelog=$CHANGELOG" >>$GITHUB_OUTPUT
-          echo "pluginVerifierHomeDir=~/.pluginVerifier" >>$GITHUB_OUTPUT
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=name::$NAME"
+          echo "::set-output name=changelog::$CHANGELOG"
+          echo "::set-output name=pluginVerifierHomeDir::~/.pluginVerifier"
 
-          ./gradlew printProductsReleases # prepare list of IDEs for Plugin Verifier
+          ./gradlew listProductsReleases # prepare list of IDEs for Plugin Verifier
 
       # Run tests
       - name: Run Tests
@@ -91,7 +91,7 @@ jobs:
       # Collect Tests Result of failed tests
       - name: Collect Tests Result
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v2
         with:
           name: tests-result
           path: ${{ github.workspace }}/build/reports/tests
@@ -100,27 +100,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew buildPlugin # sonarqube --info # Can be re-enabled once the project owner has updated the sonarqube settings
+        run: ./gradlew build sonarqube --info
 
-      # The plugin verification exhausts the available disk space, drop it for the time being
-#      # Cache Plugin Verifier IDEs
-#      - name: Setup Plugin Verifier IDEs Cache
-#        uses: actions/cache@v4
-#        with:
-#          path: ${{ steps.properties.outputs.pluginVerifierHomeDir }}/ides
-#          key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
-#
-#      # Run Verify Plugin task and IntelliJ Plugin Verifier tool
-#      - name: Run Plugin Verification tasks
-#        run: ./gradlew verifyPlugin -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }}
-#
-#      # Collect Plugin Verifier Result
-#      - name: Collect Plugin Verifier Result
-#        if: ${{ always() }}
-#        uses: actions/upload-artifact@v5
-#        with:
-#          name: pluginVerifier-result
-#          path: ${{ github.workspace }}/build/reports/pluginVerifier
+      # Cache Plugin Verifier IDEs
+      - name: Setup Plugin Verifier IDEs Cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: ${{ steps.properties.outputs.pluginVerifierHomeDir }}/ides
+          key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
+
+      # Run Verify Plugin task and IntelliJ Plugin Verifier tool
+      - name: Run Plugin Verification tasks
+        run: ./gradlew runPluginVerifier -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }}
+
+      # Collect Plugin Verifier Result
+      - name: Collect Plugin Verifier Result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: pluginVerifier-result
+          path: ${{ github.workspace }}/build/reports/pluginVerifier
 
       # Prepare plugin archive content for creating artifact
       - name: Prepare Plugin Artifact
@@ -131,11 +130,11 @@ jobs:
           FILENAME=`ls *.zip`
           unzip "$FILENAME" -d content
 
-          echo "filename=${FILENAME:0:-4}" >>$GITHUB_OUTPUT
+          echo "::set-output name=filename::${FILENAME:0:-4}"
 
       # Store already-built plugin as an artifact for downloading
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: ${{ steps.artifact.outputs.filename }}
           path: ./build/distributions/content/*/*
@@ -151,7 +150,7 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@v2.4.0
 
       # Remove old release drafts by using the curl request for the available releases with draft flag
       - name: Remove Old Release Drafts

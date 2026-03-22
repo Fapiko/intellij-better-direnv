@@ -1,7 +1,6 @@
 package com.fapiko.jetbrains.plugins.better_direnv.language.filetype;
 
 import com.fapiko.jetbrains.plugins.better_direnv.language.DirenvLanguage;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.NlsSafe;
@@ -36,6 +35,6 @@ public class DirenvFileType extends LanguageFileType {
 
     @Override
     public @Nullable Icon getIcon() {
-        return AllIcons.Nodes.Console;
+        return ShIcons.ShFile;
     }
 }
