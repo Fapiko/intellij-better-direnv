@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":better_direnv-core"))
 
     intellijPlatform {
-        intellijIdeaUltimate(providers.gradleProperty("platformVersion"))
-        plugin("Pythonid:${providers.gradleProperty("pythonPluginVersion").get()}")
+        pycharmProfessional(providers.gradleProperty("platformVersion"))
+        bundledPlugin("PythonCore")
     }
 }
