@@ -10,7 +10,7 @@ intellij {
     type.set("IU")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins.set(listOf("org.jetbrains.plugins.ruby:223.7571.4"))
+    plugins.set(listOf("org.jetbrains.plugins.ruby:${properties("rubyPluginVersion")}"))
 }
 
 dependencies {

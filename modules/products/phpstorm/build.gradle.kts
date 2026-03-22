@@ -10,7 +10,7 @@ intellij {
     type.set("IU")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins.set(listOf("com.jetbrains.php:223.7571.231"))
+    plugins.set(listOf("com.jetbrains.php:${properties("phpPluginVersion")}"))
 }
 
 dependencies {
