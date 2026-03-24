@@ -8,7 +8,7 @@ plugins {
     // Java support
     id("java")
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij.platform") version "2.11.0"
+    id("org.jetbrains.intellij.platform")
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "2.4.0"
     id("org.sonarqube") version "5.1.0.4882"
