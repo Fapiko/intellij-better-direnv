@@ -36,6 +36,14 @@ allprojects {
     }
 }
 
+subprojects {
+    pluginManager.withPlugin("org.jetbrains.intellij.platform") {
+        extensions.configure<org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformExtension> {
+            buildSearchableOptions = false
+        }
+    }
+}
+
 
 dependencies {
     implementation(project(":better_direnv-products-goland"))
