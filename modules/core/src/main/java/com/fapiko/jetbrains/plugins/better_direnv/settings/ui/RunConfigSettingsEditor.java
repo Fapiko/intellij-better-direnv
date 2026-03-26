@@ -23,6 +23,7 @@ public class RunConfigSettingsEditor<T extends RunConfigurationBase<?>> extends 
 
     public RunConfigSettingsEditor(RunConfigurationBase<?> configuration) {
         editor = new RunConfigSettingsPanel(configuration);
+        editor.addChangeListener(this::fireEditorStateChanged);
     }
 
     public static void readExternal(@NotNull RunConfigurationBase<?> configuration, @NotNull Element element) {

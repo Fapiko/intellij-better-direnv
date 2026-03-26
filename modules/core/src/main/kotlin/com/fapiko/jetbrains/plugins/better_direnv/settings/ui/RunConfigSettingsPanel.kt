@@ -2,23 +2,21 @@ package com.fapiko.jetbrains.plugins.better_direnv.settings.ui
 
 import com.fapiko.jetbrains.plugins.better_direnv.settings.DirenvSettings
 import com.intellij.execution.configurations.RunConfigurationBase
-import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 
 class RunConfigSettingsPanel(configuration: RunConfigurationBase<*>) {
-    private var useDirenvEnabled = false
-    private var direnvTrusted = false
+    private val enableDirenvCheckBox = JCheckBox("Enable Direnv")
+    private val trustEnvrcCheckBox = JCheckBox("Trust .envrc")
 
-    val component: JComponent = panel {
+    private val panel = panel {
         row {
-            checkBox("Enable Direnv")
-                .bindSelected(::useDirenvEnabled)
+            cell(enableDirenvCheckBox)
         }
         indent {
             row {
-                checkBox("Trust .envrc")
-                    .bindSelected(::direnvTrusted)
+                cell(trustEnvrcCheckBox)
             }
             row {
                 comment(
@@ -30,12 +28,19 @@ class RunConfigSettingsPanel(configuration: RunConfigurationBase<*>) {
         }
     }
 
+    val component: JComponent get() = panel
+
+    fun addChangeListener(listener: Runnable) {
+        enableDirenvCheckBox.addItemListener { listener.run() }
+        trustEnvrcCheckBox.addItemListener { listener.run() }
+    }
+
     fun getState(): DirenvSettings {
-        return DirenvSettings(useDirenvEnabled, direnvTrusted)
+        return DirenvSettings(enableDirenvCheckBox.isSelected, trustEnvrcCheckBox.isSelected)
     }
 
     fun setState(state: DirenvSettings) {
-        useDirenvEnabled = state.isDirenvEnabled()
-        direnvTrusted = state.isDirenvTrusted()
+        enableDirenvCheckBox.isSelected = state.isDirenvEnabled()
+        trustEnvrcCheckBox.isSelected = state.isDirenvTrusted()
     }
 }
