@@ -1,6 +1,6 @@
 # intellij-better-direnv
 
-![Build](https://github.com/Fapiko/intellij-better-direnv/workflows/Build/badge.svg)
+[![Build](https://github.com/better-direnv/intellij-better-direnv/actions/workflows/build.yml/badge.svg)](https://github.com/better-direnv/intellij-better-direnv/actions/workflows/build.yml)
 [![Version](https://img.shields.io/jetbrains/plugin/v/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/19275-better-direnv.svg)](https://plugins.jetbrains.com/plugin/19275-better-direnv)
 
