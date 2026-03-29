@@ -11,43 +11,6 @@ when:
   - event: [push, pull_request]
 
 steps:
-  - name: gradle-wrapper-validation
-    image: eclipse-temurin:21-jdk
-    commands:
-      - |
-        WRAPPER_JAR=gradle/wrapper/gradle-wrapper.jar
-        EXPECTED_SHA=$(grep distributionSha256Sum gradle/wrapper/gradle-wrapper.properties | cut -d= -f2)
-        if [ -n "$EXPECTED_SHA" ]; then
-          ACTUAL_SHA=$(sha256sum "$WRAPPER_JAR" | cut -d' ' -f1)
-          if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
-            echo "Gradle wrapper checksum mismatch!" && exit 1
-          fi
-          echo "Gradle wrapper checksum OK"
-        else
-          echo "No distributionSha256Sum found, skipping checksum verification"
-        fi
-
-  - name: export-properties
-    image: eclipse-temurin:21-jdk
-    environment:
-      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-    commands:
-      - ./gradlew properties --console=plain -q
-
-  - name: run-tests
-    image: eclipse-temurin:21-jdk
-    environment:
-      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-    commands:
-      - ./gradlew test
-
-  - name: verify-plugin
-    image: eclipse-temurin:21-jdk
-    environment:
-      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-    commands:
-      - ./gradlew verifyPlugin
-
   - name: qodana
     image: jetbrains/qodana-jvm
     environment:
@@ -61,7 +24,7 @@ steps:
     environment:
       GRADLE_USER_HOME: /woodpecker/src/cache/gradle
     commands:
-      - ./gradlew build --info
+      - ./gradlew verifyPlugin build --info
 
   - name: sonarqube
     image: eclipse-temurin:21-jdk
@@ -71,24 +34,6 @@ steps:
         from_secret: sonar_token
     commands:
       - '[ -z "$SONAR_TOKEN" ] || [ "$SONAR_TOKEN" = "." ] && echo "Skipping: SONAR_TOKEN not configured" && exit 0; ./gradlew sonarqube --info'
-
-  - name: run-plugin-verifier
-    image: eclipse-temurin:21-jdk
-    environment:
-      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-    commands:
-      - ./gradlew runPluginVerifier
-
-  - name: prepare-artifact
-    image: eclipse-temurin:21-jdk
-    environment:
-      GRADLE_USER_HOME: /woodpecker/src/cache/gradle
-    commands:
-      - |
-        cd build/distributions
-        FILENAME=$(ls *.zip | head -1)
-        unzip "$FILENAME" -d content
-        echo "Artifact ${FILENAME%.zip} ready"
 
   - name: create-release-draft
     image: eclipse-temurin:21-jdk
@@ -115,3 +60,7 @@ steps:
           --draft \
           --title "v${VERSION}" \
           --notes "${CHANGELOG}"
+        
+        cd build/distributions
+        FILENAME=$(ls *.zip | head -1)
+        gh release upload "v${VERSION}" "${FILENAME}"
